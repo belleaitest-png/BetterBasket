@@ -1,0 +1,35 @@
+{
+  "name": "better-basket",
+  "version": "0.1.0",
+  "description": "A modern Next.js 15 application with Supabase, AI, and analytics",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "15.1.6",
+    "react": "^19",
+    "react-dom": "^19",
+    "@supabase/supabase-js": "^2.47.10",
+    "@supabase/ssr": "^0.5.2",
+    "@anthropic-ai/sdk": "^0.36.3",
+    "ai": "^4.1.27",
+    "zustand": "^5.0.3",
+    "lucide-react": "^0.473.0",
+    "@amplitude/analytics-browser": "^2.11.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "@types/react": "^19",
+    "@types/node": "^22",
+    "tailwindcss": "^3.4.17",
+    "postcss": "^8.5.1",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.6"
+  }
+}
