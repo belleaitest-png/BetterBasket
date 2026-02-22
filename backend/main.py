@@ -4,6 +4,16 @@ BetterBasket API — FastAPI entry point.
 Run with:  uvicorn backend.main:app --reload
 """
 
+from dotenv import load_dotenv
+load_dotenv()  # loads .env from the project root before anything else
+
+import os
+import sys
+
+if not os.getenv("ANTHROPIC_API_KEY"):
+    print("ERROR: ANTHROPIC_API_KEY is not set. Add it to your .env file.", file=sys.stderr)
+    sys.exit(1)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .api.chat import router as chat_router
