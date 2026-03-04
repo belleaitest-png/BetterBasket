@@ -1,12 +1,12 @@
 {
   "mcpServers": {
-    "canva": {
+    "canvas": {
       "command": "npx",
-      "args": ["-y", "mcp-remote@latest", "https://mcp.canva.com/mcp"]
-    },
-    "canva-dev": {
-      "command": "npx",
-      "args": ["-y", "@canva/cli@latest", "mcp"]
+      "args": ["-y", "@r-huijts/canvas-mcp"],
+      "env": {
+        "CANVAS_API_TOKEN": "${CANVAS_API_TOKEN}",
+        "CANVAS_BASE_URL": "https://hbs.instructure.com"
+      }
     }
   }
 }
