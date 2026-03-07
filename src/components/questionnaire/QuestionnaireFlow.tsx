@@ -31,10 +31,6 @@ export function QuestionnaireFlow() {
     }
   };
 
-  const handleGenerateNow = () => {
-    setScreen("loading");
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top bar */}
@@ -65,7 +61,7 @@ export function QuestionnaireFlow() {
 
         {currentSection > 1 && (
           <button
-            onClick={handleGenerateNow}
+            onClick={() => setScreen("loading")}
             className="text-xs text-brand-accent font-medium tracking-wide hover:brightness-125 transition-all"
           >
             Generate Now
@@ -110,7 +106,7 @@ export function QuestionnaireFlow() {
         </button>
 
         <span className="text-xs text-brand-muted/40">
-          {answers.q1 ? `${answers.q1}'s brand` : "Your brand"}
+          {answers.q21 ? `${answers.q21}\u2019s brand` : "Your brand"}
         </span>
 
         <button

@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useBrandStore } from "@/store/brand-store";
-import { generateBrief } from "./BrandKit";
+import { generateBrief } from "@/lib/brief";
 
 export function BrandBriefFooter() {
   const selectedDirection = useBrandStore((s) => s.selectedDirection);
@@ -13,11 +13,11 @@ export function BrandBriefFooter() {
   const [downloading, setDownloading] = useState(false);
 
   const dir = directions.find((d) => d.id === selectedDirection);
-  const userName = answers.q1 || "Your Name";
+  const userName = answers.q21 || "Your Name";
 
   const handleCopy = () => {
     if (!dir) return;
-    const brief = generateBrief(dir, userName);
+    const brief = generateBrief(dir, answers);
     navigator.clipboard.writeText(brief);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -27,14 +27,13 @@ export function BrandBriefFooter() {
     if (!dir) return;
     setDownloading(true);
     try {
-      const brief = generateBrief(dir, userName);
+      const brief = generateBrief(dir, answers);
 
-      // Generate a styled HTML document and trigger print/save as PDF
       const html = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
-<title>${userName} — Brand Guidelines (${dir.label})</title>
+<title>${userName} \u2014 Brand Guidelines (${dir.label})</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -58,11 +57,6 @@ export function BrandBriefFooter() {
   .font-label { font-size: 10px; font-weight: 700; color: ${dir.colors.accent.hex}; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
   .font-name { font-size: 13px; font-weight: 600; }
   .font-use { font-size: 11px; color: #888; margin-top: 2px; }
-  .attr { padding: 8px 14px; background: ${dir.colors.accent.hex}12; border: 1px solid ${dir.colors.accent.hex}30; border-radius: 6px; margin-bottom: 6px; font-size: 13px; }
-  .quote { padding: 10px 14px; border-left: 2px solid ${dir.colors.accent.hex}60; margin-bottom: 6px; font-style: italic; font-size: 13px; color: #5a5450; background: #fafaf8; border-radius: 0 6px 6px 0; }
-  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { padding: 4px 10px; border-radius: 4px; font-size: 11px; background: #f0ece4; }
-  .tag-avoid { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
   .brief-block { background: #0f0e0c; color: #8a8480; padding: 16px 20px; border-radius: 10px; font-family: monospace; font-size: 11px; line-height: 1.8; white-space: pre-wrap; margin-top: 24px; }
   .footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid #e8e4dc; text-align: center; font-size: 11px; color: #b0a8a0; }
   @media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
@@ -71,56 +65,18 @@ export function BrandBriefFooter() {
 <body>
 <div class="page">
   <div class="header">
-    <div class="badge">Brand Guidelines</div>
+    <div class="badge">Brand Guidelines + Discovery Profile</div>
     <h1>${userName}<br><em>${dir.label}</em></h1>
-    <p class="subtitle">${dir.tagline} — ${dir.vibe.join(" · ")}</p>
+    <p class="subtitle">${dir.tagline} \u2014 ${dir.vibe.join(" \u00b7 ")}</p>
   </div>
 
   <div class="section">
-    <div class="section-title">Colour Palette</div>
-    <div class="swatches">
-      ${Object.values(dir.colors).map(c => {
-        const lum = parseInt(c.hex.slice(1,3),16)*0.299 + parseInt(c.hex.slice(3,5),16)*0.587 + parseInt(c.hex.slice(5,7),16)*0.114;
-        const tc = lum > 145 ? '#111' : '#fff';
-        return `<div class="swatch"><div class="swatch-color" style="background:${c.hex}"><span style="color:${tc}">${c.hex}</span></div><div class="swatch-info"><div class="swatch-name">${c.name}</div><div class="swatch-role">${c.role}</div></div></div>`;
-      }).join('')}
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Typography</div>
-    ${([['Display', dir.fonts.display], ['Body', dir.fonts.body], ['Accent', dir.fonts.accent]] as const).map(([role, font]) =>
-      `<div class="font-row"><div class="font-label">${role}</div><div class="font-name">${font.name} (${font.weight})</div><div class="font-use">${font.use}</div></div>`
-    ).join('')}
-  </div>
-
-  <div class="section">
-    <div class="section-title">Voice Attributes</div>
-    ${dir.tone.attrs.map(a => `<div class="attr">✦ ${a}</div>`).join('')}
-  </div>
-
-  <div class="section">
-    <div class="section-title">Example Copy</div>
-    ${dir.tone.examples.map(ex => `<div class="quote">"${ex}"</div>`).join('')}
-  </div>
-
-  <div class="section">
-    <div class="section-title">Power Words</div>
-    <div class="tags">${dir.tone.power.map(w => `<div class="tag">${w}</div>`).join('')}</div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">Words to Avoid</div>
-    <div class="tags">${dir.tone.avoid.map(w => `<div class="tag tag-avoid">${w}</div>`).join('')}</div>
-  </div>
-
-  <div class="section">
-    <div class="section-title">LLM-Ready Brand Brief</div>
+    <div class="section-title">Complete Brand Brief + Discovery Profile</div>
     <div class="brief-block">${brief.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
   </div>
 
   <div class="footer">
-    ${userName} — ${dir.label} — Brand Guidelines<br>
+    ${userName} \u2014 ${dir.label} \u2014 Brand Guidelines<br>
     Generated by Brand Image Discovery
   </div>
 </div>
@@ -139,7 +95,7 @@ export function BrandBriefFooter() {
     } finally {
       setDownloading(false);
     }
-  }, [dir, userName]);
+  }, [dir, userName, answers]);
 
   if (!dir) return null;
 
@@ -151,7 +107,7 @@ export function BrandBriefFooter() {
             \u2726 {dir.label} selected
           </div>
           <div className="text-[11px] text-brand-muted mt-0.5">
-            Scroll up &rarr; Voice tab &rarr; Copy Brand Brief
+            Includes full discovery profile in export
           </div>
         </div>
         <div className="flex gap-2.5">
@@ -166,7 +122,7 @@ export function BrandBriefFooter() {
             disabled={downloading}
             className="px-4 py-2.5 rounded-lg text-sm font-semibold bg-white/[0.08] border border-white/10 text-brand-text hover:bg-white/[0.12] transition-all disabled:opacity-50"
           >
-            {downloading ? "Generating..." : "Download PDF"}
+            {downloading ? "Generating..." : "Download"}
           </button>
           <button
             onClick={handleCopy}

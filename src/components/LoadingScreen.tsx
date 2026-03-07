@@ -5,6 +5,7 @@ import { useBrandStore } from "@/store/brand-store";
 
 const STAGES = [
   "Analysing your responses",
+  "Reading your quick-fire choices",
   "Mapping colour psychology",
   "Pairing typography systems",
   "Crafting tone of voice",
@@ -20,7 +21,7 @@ export function LoadingScreen() {
   const [stageIndex, setStageIndex] = useState(0);
 
   useEffect(() => {
-    const duration = 8000; // 8 seconds total
+    const duration = 8000;
     const interval = 50;
     const steps = duration / interval;
     let step = 0;
@@ -73,7 +74,7 @@ export function LoadingScreen() {
             {STAGES[stageIndex]}
           </p>
           <p className="text-xs text-brand-muted/50">
-            Building {answers.q1 ? `${answers.q1}'s` : "your"} personal brand system
+            Building {answers.q21 ? `${answers.q21}\u2019s` : "your"} personal brand system
           </p>
         </div>
 
@@ -83,9 +84,7 @@ export function LoadingScreen() {
             <div
               key={i}
               className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                i <= stageIndex
-                  ? "bg-brand-accent"
-                  : "bg-white/10"
+                i <= stageIndex ? "bg-brand-accent" : "bg-white/10"
               }`}
             />
           ))}
@@ -97,12 +96,14 @@ export function LoadingScreen() {
             Live Preview
           </div>
           <p className="text-xs text-brand-muted/70 leading-relaxed font-mono">
-            {progress < 30
-              ? `Analysing: "${answers.q6 || "Your thesis statement"}"`
-              : progress < 60
-              ? `Mapping aesthetic: ${(answers.q12 as string[])?.join(", ") || "Editorial, Warm, Minimal"}`
-              : progress < 85
-              ? `Voice: ${answers.q15 || "Direct and evidence-based"}`
+            {progress < 25
+              ? `Sunday morning: "${(answers.q2 || "Analysing lifestyle signals").slice(0, 80)}..."`
+              : progress < 50
+              ? `Feed analysis: ${answers.q4?.join(", ") || "Mapping content taste"}`
+              : progress < 75
+              ? `Aesthetic: ${answers.q13?.join(", ") || "Editorial, Warm, Minimal"}`
+              : progress < 90
+              ? `Voice: "${(answers.q18 || "Calibrating natural tone").slice(0, 80)}..."`
               : "Rendering 3 distinct brand directions..."}
           </p>
         </div>

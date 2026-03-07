@@ -16,7 +16,7 @@ export function ResultsScreen() {
       {/* Top bar */}
       <div className="border-b border-white/5 px-6 md:px-10 py-4 flex items-center justify-between">
         <span className="text-xs text-brand-muted/60 tracking-[0.08em] uppercase">
-          Brand Discovery {answers.q1 ? `\u00b7 ${answers.q1}` : ""}
+          Brand Discovery {answers.q21 ? `\u00b7 ${answers.q21}` : ""}
         </span>
         <button
           onClick={() => setScreen("questionnaire")}
@@ -59,8 +59,8 @@ export function ResultsScreen() {
                 dir.id === selectedDirection ? null : dir.id
               )
             }
-            userName={answers.q1 || "Your Name"}
-            userRole={answers.q2 || "Your Role"}
+            userName={answers.q21 || "Your Name"}
+            userRole={answers.q22 || "Your Role"}
           />
         ))}
       </div>

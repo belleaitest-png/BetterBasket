@@ -41,40 +41,59 @@ export interface BrandDirection {
   heroStyle: string;
 }
 
+// This-or-That pair choice: "left" | "right" | null
+export interface ThisOrThatPair {
+  left: string;
+  right: string;
+}
+
+// Spectrum slider: 0-100 value
+export interface SpectrumItem {
+  left: string;
+  right: string;
+}
+
 export interface QuestionnaireAnswers {
-  // Section 1 — About You
-  q1: string;   // name
-  q2: string;   // role
-  q3: string[]; // audience (multi)
-  q4: string;   // stage
+  // Section 1 — The Quick-Fire Round
+  q1: Record<string, "left" | "right">;  // this-or-that pairs
+  q2: string;                             // perfect sunday morning
+  q3: string[];                           // 3-hour topics (chips + custom)
+  q3_custom: string;                      // custom additions
 
-  // Section 2 — Your Story
-  q5: string;   // background
-  q6: string;   // one thing
-  q7: string;   // unusual path
+  // Section 2 — Your World Online
+  q4: string[];                           // social feed content
+  q4_custom: string;
+  q5: string[];                           // visual style drawn to
+  q6: string[];                           // what you post about
+  q6_custom: string;
 
-  // Section 3 — Your Work
-  q8: string;   // building
-  q9: string;   // problem
-  q10: string;  // thesis
+  // Section 3 — Your People & Edges
+  q8: string[];                           // people you admire (icon grid)
+  q8_custom: string;                      // add your own
+  q9: string;                             // what they have in common
+  q10: string[];                          // cringe brand tropes
+  q11: Record<string, number>;            // spectrum sliders (0-100)
 
-  // Section 4 — Your Aesthetic
-  q11: string[]; // feeling chips
-  q12: string[]; // aesthetic chips
-  q13: number[]; // mood board selections (indices)
-  q14: string[]; // admired brands
+  // Section 4 — Your Visual World (KEPT)
+  q12: string[];                          // feeling chips
+  q13: string[];                          // aesthetic chips
+  q14: number[];                          // mood board indices
+  q15: string[];                          // visual identity admire (icon grid)
 
-  // Section 5 — Your Voice
-  q15: string;   // communication style
-  q16: string[]; // tone to avoid
-  q17: string;   // sample sentence
-  q18: string;   // banned words
+  // Section 5 — Voice & Difference
+  q16: string;                            // unusual combination
+  q17: string;                            // what people come to you for
+  q18: string;                            // one sentence voice sample
+  q19: string;                            // never come across as
+  q20: string;                            // banned words
 
-  // Section 6 — Your Platforms
-  q19: string[]; // platforms
-  q20: string;   // instagram handle
-  q21: string[]; // CTA goals
-  q22: string;   // anything else
+  // Section 6 — Ground It
+  q21: string;                            // name
+  q22: string;                            // what you do today
+  q23: string;                            // professional backstory
+  q24: string[];                          // platforms
+  q25: string[];                          // CTAs
+  q26: string;                            // anything else
 }
 
 export type AppScreen = "splash" | "questionnaire" | "loading" | "results";

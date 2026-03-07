@@ -1,10 +1,16 @@
+import { ThisOrThatPair, SpectrumItem } from "./types";
+
 export interface Question {
   id: string;
   label: string;
-  type: "text" | "textarea" | "radio" | "chips" | "mood-board" | "icon-grid";
+  sublabel?: string;
+  type: "text" | "textarea" | "radio" | "chips" | "chips-custom" | "mood-board" | "icon-grid" | "this-or-that" | "spectrum";
   placeholder?: string;
   options?: string[];
   maxSelect?: number;
+  pairs?: ThisOrThatPair[];
+  spectrums?: SpectrumItem[];
+  customFieldId?: string; // for chips-custom, the answer key that stores custom entries
 }
 
 export interface Section {
@@ -13,6 +19,25 @@ export interface Section {
   subtitle: string;
   questions: Question[];
 }
+
+export const THIS_OR_THAT_PAIRS: ThisOrThatPair[] = [
+  { left: "Early riser", right: "Night owl" },
+  { left: "Plan every detail", right: "Figure it out as I go" },
+  { left: "Big group energy", right: "Deep 1-on-1 conversations" },
+  { left: "Lead from the front", right: "Empower from behind" },
+  { left: "Show me the data", right: "Trust your gut" },
+  { left: "Overdressed", right: "Underdressed" },
+  { left: "Say more", right: "Say less" },
+  { left: "Blends in then surprises you", right: "Fills the room immediately" },
+];
+
+export const SPECTRUM_ITEMS: SpectrumItem[] = [
+  { left: "Serious", right: "Playful" },
+  { left: "Polished", right: "Raw & unfiltered" },
+  { left: "Quiet authority", right: "Loud energy" },
+  { left: "Warm & emotional", right: "Sharp & analytical" },
+  { left: "Traditional", right: "Unconventional" },
+];
 
 export const MOOD_BOARD_IMAGES = [
   { src: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop", label: "Warm food flat lay" },
@@ -46,77 +71,172 @@ export const BRAND_ICONS = [
   { name: "Yvon Chouinard", desc: "Values-led brand, anti-corporate" },
   { name: "Esther Perel", desc: "Depth, nuance, European intellectual warmth" },
   { name: "Alex Hormozi", desc: "Direct response, no-fluff execution" },
+  { name: "Jenna Kutcher", desc: "Warm editorial, strategic clarity" },
+  { name: "Reshma Saujani", desc: "Mission-driven authority" },
+  { name: "Marie Forleo", desc: "Directness, confident energy" },
+  { name: "Sahil Bloom", desc: "Frameworks, clarity, modern thought leadership" },
 ];
 
 export const SECTIONS: Section[] = [
   {
     id: 1,
-    title: "About You",
-    subtitle: "Let's start with who you are and who you're building for.",
+    title: "The Quick-Fire Round",
+    subtitle: "No overthinking. On your best, highest-energy day\u2026",
     questions: [
-      { id: "q1", label: "What is your name?", type: "text", placeholder: "Your full name" },
-      { id: "q2", label: "What do you do?", type: "text", placeholder: "e.g. Founder · Investor · Creative Director" },
       {
-        id: "q3",
-        label: "Who is your primary audience?",
-        type: "chips",
-        options: ["Investors", "Potential co-founders", "Industry partners", "Customers / clients", "General public", "Media / press", "Hiring talent", "Community"],
+        id: "q1",
+        label: "This or that \u2014 go with your gut",
+        sublabel: "On your best, highest-energy day, which feels more like you?",
+        type: "this-or-that",
+        pairs: THIS_OR_THAT_PAIRS,
       },
       {
-        id: "q4",
-        label: "What stage are you at?",
-        type: "radio",
-        options: ["Idea / exploring", "Pre-seed / seed stage founder", "Series A+ founder", "Established executive", "Investor / advisor", "Creative / freelancer"],
+        id: "q2",
+        label: "Describe your perfect Sunday morning.",
+        sublabel: "Don't overthink it \u2014 just walk us through it.",
+        type: "textarea",
+        placeholder: "Wake up slowly, coffee on the balcony, a long run through the park\u2026",
+      },
+      {
+        id: "q3",
+        label: "What could you talk about for 3 hours without notes?",
+        type: "chips-custom",
+        customFieldId: "q3_custom",
+        options: [
+          "Nutrition & food science", "Building a startup", "Fitness & training",
+          "Behavioural psychology", "Investing & markets", "Design & aesthetics",
+          "Travel & culture", "Cooking", "Climate & sustainability",
+          "Tech & AI", "Music", "Books", "Sport strategy",
+          "Philosophy", "Health systems", "Education", "Parenting",
+          "Fashion", "Science", "History",
+        ],
       },
     ],
   },
   {
     id: 2,
-    title: "Your Story",
-    subtitle: "The narrative that makes you memorable.",
+    title: "Your World Online",
+    subtitle: "What you consume says more about you than what you say about yourself.",
     questions: [
-      { id: "q5", label: "What is your professional background?", type: "textarea", placeholder: "Degrees, companies, roles — bullet points fine." },
-      { id: "q6", label: "What is the one thing you want people to know about you?", type: "textarea", placeholder: "Your thesis, your mission, your point of view." },
-      { id: "q7", label: "What makes your path unusual or interesting?", type: "textarea", placeholder: "Career pivots, unconventional combinations, counterintuitive backstory." },
+      {
+        id: "q4",
+        label: "What does your social media feed look like?",
+        sublabel: "What keeps showing up? Tap all that apply.",
+        type: "chips-custom",
+        customFieldId: "q4_custom",
+        options: [
+          "Food & recipes", "Fitness & training", "Interior design", "Fashion",
+          "Travel", "Founders & startups", "Science & research", "Art & photography",
+          "News & politics", "Finance & investing", "Nature & outdoors",
+          "Architecture", "Books & reading", "Wellness & mindfulness",
+          "Comedy & memes", "Tech & AI", "Beauty", "Music", "Sport",
+          "Parenting",
+        ],
+      },
+      {
+        id: "q5",
+        label: "The content you\u2019re drawn to \u2014 what does it look like?",
+        sublabel: "Not who \u2014 what visual style pulls you in?",
+        type: "chips",
+        options: [
+          "Clean & minimal", "Dark & moody", "Bright & colourful",
+          "Earthy & warm", "Editorial & polished", "Raw & unfiltered",
+          "Text-heavy / quote-led", "Photo-led / visual-first",
+          "Data & infographics", "Video-first",
+        ],
+        maxSelect: 4,
+      },
+      {
+        id: "q6",
+        label: "What do you actually post about?",
+        sublabel: "Or what would you post about if you were more active?",
+        type: "chips-custom",
+        customFieldId: "q6_custom",
+        options: [
+          "My work / business", "Behind-the-scenes of building",
+          "Industry insights", "Personal life moments",
+          "Health & fitness", "Food & cooking", "Travel",
+          "Opinions & hot takes", "Educational content",
+          "Book / podcast recs", "Rarely post / mostly lurk",
+        ],
+      },
     ],
   },
   {
     id: 3,
-    title: "Your Work",
-    subtitle: "What you're building and why it matters.",
+    title: "Your People & Your Edges",
+    subtitle: "Who you admire, who you\u2019re not, and where you sit.",
     questions: [
-      { id: "q8", label: "What are you building or working on?", type: "textarea", placeholder: "Your startup, project, role, or portfolio." },
-      { id: "q9", label: "What problem does it solve?", type: "textarea", placeholder: "What pain does your work remove? For whom?" },
-      { id: "q10", label: "What is your thesis or point of view?", type: "textarea", placeholder: "One sentence that represents your worldview." },
+      {
+        id: "q8",
+        label: "People you admire \u2014 whose brand energy do you respect?",
+        sublabel: "Select up to 5, then add anyone we missed.",
+        type: "icon-grid",
+        maxSelect: 5,
+        customFieldId: "q8_custom",
+      },
+      {
+        id: "q9",
+        label: "What do they have in common?",
+        sublabel: "One sentence. What\u2019s the pattern?",
+        type: "text",
+        placeholder: "They\u2019re all builders who lead with substance over hype\u2026",
+      },
+      {
+        id: "q10",
+        label: "Brand tropes that make you cringe",
+        sublabel: "Tap every archetype that makes you wince.",
+        type: "chips",
+        options: [
+          "The hustle-porn guru",
+          "The wellness fairy",
+          "The corporate robot",
+          "The \u201Cthought leader\u201D who says nothing",
+          "The humble-brag founder",
+          "The aesthetic-over-substance influencer",
+          "The motivational poster account",
+          "The always-positive toxic optimist",
+          "The jargon machine",
+          "The oversharer",
+          "The \u201CI just work harder\u201D bro",
+        ],
+      },
+      {
+        id: "q11",
+        label: "Where do you fall?",
+        sublabel: "Drag each slider to where feels right. There\u2019s no wrong answer.",
+        type: "spectrum",
+        spectrums: SPECTRUM_ITEMS,
+      },
     ],
   },
   {
     id: 4,
-    title: "Your Aesthetic",
-    subtitle: "The visual world you want to inhabit.",
+    title: "Your Visual World",
+    subtitle: "The colours, textures, and feeling you want your brand to carry.",
     questions: [
       {
-        id: "q11",
-        label: "How do you want to feel when someone lands on your site?",
+        id: "q12",
+        label: "How do you want people to feel when they land on your site?",
         type: "chips",
         options: ["Credible", "Warm", "Ambitious", "Grounded", "Inspiring", "Approachable", "Bold", "Calm", "Exciting", "Trustworthy", "Innovative", "Premium"],
         maxSelect: 4,
       },
       {
-        id: "q12",
+        id: "q13",
         label: "What words describe your aesthetic?",
         type: "chips",
         options: ["Editorial", "Warm", "Minimal", "Earthy", "Clean", "Modern", "Geometric", "Natural", "Bold", "Understated", "Textured", "Refined"],
         maxSelect: 4,
       },
       {
-        id: "q13",
-        label: "Visual mood board — tap the images that feel right",
+        id: "q14",
+        label: "Visual mood board \u2014 tap the images that feel right",
         type: "mood-board",
       },
       {
-        id: "q14",
-        label: "Brands or people whose visual identity you admire",
+        id: "q15",
+        label: "People whose visual identity you admire",
         type: "icon-grid",
         maxSelect: 5,
       },
@@ -124,45 +244,88 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 5,
-    title: "Your Voice",
-    subtitle: "How you sound — and how you never want to.",
+    title: "Your Voice & What Makes You Different",
+    subtitle: "The things only you can say, and the lines you\u2019ll never cross.",
     questions: [
       {
-        id: "q15",
-        label: "How would you describe your communication style?",
-        type: "radio",
-        options: ["Warm and conversational", "Direct and evidence-based", "Visionary and inspirational", "Strategic and analytical", "Playful and relatable", "Calm and thoughtful"],
+        id: "q16",
+        label: "What two things do you combine that don\u2019t usually go together?",
+        sublabel: "This is often your entire brand in one sentence.",
+        type: "textarea",
+        placeholder: "e.g. Chartered accountant + competitive athlete. Corporate restructuring + food science.",
       },
       {
-        id: "q16",
-        label: "What tone do you want to avoid?",
-        type: "chips",
-        options: ["Hustle culture", "Wellness cliche", "Corporate jargon", "Diet culture", "Overly academic", "Celebrity lifestyle", "Tech bro", "Self-help generic"],
+        id: "q17",
+        label: "What do people actually come to you for?",
+        sublabel: "Not your job title \u2014 what do friends, colleagues, even strangers ask you about?",
+        type: "textarea",
+        placeholder: "e.g. Breaking down complex problems. Honest feedback. Making a plan when everything feels chaotic.",
       },
-      { id: "q17", label: "Write one sentence that sounds like you", type: "textarea", placeholder: "Don't overthink it — just write how you'd say something you believe." },
-      { id: "q18", label: "What words do you never want associated with your brand?", type: "textarea", placeholder: "Cliches, buzzwords, tones that aren't you." },
+      {
+        id: "q18",
+        label: "Write one sentence the way you\u2019d actually say it. About anything you believe.",
+        sublabel: "This calibrates your natural voice.",
+        type: "textarea",
+        placeholder: "Don\u2019t overthink it \u2014 just write how you\u2019d say something at a dinner table.",
+      },
+      {
+        id: "q19",
+        label: "\u201CI never want to come across as\u2026\u201D",
+        type: "textarea",
+        placeholder: "e.g. Preachy. Trying too hard. Like I\u2019m selling something. Cold or unapproachable.",
+      },
+      {
+        id: "q20",
+        label: "Words that are permanently banned from your brand",
+        type: "textarea",
+        placeholder: "Game-changing, passionate about, hustle, authentic journey, leveraging synergies\u2026",
+      },
     ],
   },
   {
     id: 6,
-    title: "Your Platforms",
-    subtitle: "Where you show up and what you want people to do.",
+    title: "Ground It",
+    subtitle: "The practical details that anchor everything above.",
     questions: [
       {
-        id: "q19",
-        label: "Where do you primarily show up online?",
-        type: "chips",
-        options: ["LinkedIn", "Instagram", "Twitter / X", "Newsletter", "Podcast", "YouTube", "Personal website", "Substack"],
-      },
-      { id: "q20", label: "What is your Instagram handle?", type: "text", placeholder: "@yourhandle" },
-      {
         id: "q21",
-        label: "What do you want people to do after visiting your site?",
+        label: "What\u2019s your name?",
+        type: "text",
+        placeholder: "Your full name",
+      },
+      {
+        id: "q22",
+        label: "What do you do today?",
+        sublabel: "Role, company, or however you\u2019d introduce yourself at a dinner.",
+        type: "textarea",
+        placeholder: "e.g. Founder of Verifood. Building AI-powered nutrition at the point of grocery purchase.",
+      },
+      {
+        id: "q23",
+        label: "The quick backstory \u2014 education, career highlights, the CV reel",
+        type: "textarea",
+        placeholder: "Degrees, companies, roles \u2014 bullet points fine.",
+      },
+      {
+        id: "q24",
+        label: "Where do you show up online?",
         type: "chips",
-        options: ["Follow my build", "Connect on LinkedIn", "Learn about Verifood", "Book a call", "Join my waitlist", "Read my writing", "Hire me", "Invest in me"],
+        options: ["LinkedIn", "Instagram", "Twitter / X", "Newsletter", "Podcast", "YouTube", "Personal website", "Substack", "TikTok"],
+      },
+      {
+        id: "q25",
+        label: "After encountering your brand, what should people do?",
+        type: "chips",
+        options: ["Follow my build", "Connect on LinkedIn", "Learn about my company", "Book a call", "Join my waitlist", "Read my writing", "Hire me", "Invest in me"],
         maxSelect: 3,
       },
-      { id: "q22", label: "Anything else you want to share?", type: "textarea", placeholder: "Context, constraints, things you want the brand to account for." },
+      {
+        id: "q26",
+        label: "Anything else that matters?",
+        sublabel: "Timeline, constraints, context the brand should account for.",
+        type: "textarea",
+        placeholder: "e.g. Graduating HBS May 2026. Need brand locked before then. Actively fundraising.",
+      },
     ],
   },
 ];

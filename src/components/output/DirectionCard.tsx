@@ -283,7 +283,7 @@ export function DirectionCard({ dir, selected, onSelect, userName, userRole }: P
       {/* Brand Kit — visible when selected */}
       {selected && (
         <div className="border-t border-white/[0.06] p-5 md:p-6 bg-brand-bg">
-          <BrandKit dir={dir} userName={userName} />
+          <BrandKit dir={dir} />
         </div>
       )}
     </div>
