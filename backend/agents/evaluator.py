@@ -10,11 +10,16 @@ Uses Claude with structured tool use so scores are always parseable.
 
 import anthropic
 import json
+import os
+import logging
 from ..models.session import Session
 from ..models.product import Product, ProductScore
 from ..models.user import CriteriaWeights
 
-client = anthropic.Anthropic()
+logger = logging.getLogger(__name__)
+client = anthropic.AsyncAnthropic()
+
+EVALUATOR_MODEL = os.getenv("EVALUATOR_MODEL", "claude-sonnet-4-5")
 
 SCORE_TOOL = {
     "name": "score_products",
@@ -102,8 +107,8 @@ class EvaluatorAgent:
             "Call the score_products tool with your results."
         )
 
-        response = client.messages.create(
-            model="claude-opus-4-5",
+        response = await client.messages.create(
+            model=EVALUATOR_MODEL,
             max_tokens=2048,
             tools=[SCORE_TOOL],
             tool_choice={"type": "tool", "name": "score_products"},
@@ -136,4 +141,5 @@ class EvaluatorAgent:
                     reasoning=score_data.get("reasoning", "Best overall match for your profile."),
                 )
 
+        logger.warning("No score_products tool call in response for need: %s", need)
         return None

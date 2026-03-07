@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from .product import Product
 
 
@@ -20,7 +20,7 @@ class Basket(BaseModel):
     user_id: str
     items: list[BasketItem] = []
     preferred_store: Optional[str] = None
-    updated_at: datetime = datetime.utcnow()
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
     @property
     def total_estimate(self) -> float:

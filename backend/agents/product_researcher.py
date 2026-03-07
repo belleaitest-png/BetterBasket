@@ -9,10 +9,12 @@ In Phase 2, this becomes an Open Food Facts / retailer API call.
 """
 
 import json
-import os
+import logging
 from pathlib import Path
 from ..models.session import Session
 from ..models.product import Product
+
+logger = logging.getLogger(__name__)
 
 CATALOGUE_PATH = Path(__file__).parent.parent / "data" / "products.json"
 

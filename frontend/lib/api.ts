@@ -42,11 +42,10 @@ export async function getBasket(sessionId: string) {
 }
 
 export async function removeBasketItem(sessionId: string, productId: string) {
-  const res = await fetch(`${BASE}/basket/${sessionId}/item`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ product_id: productId }),
-  });
+  const res = await fetch(
+    `${BASE}/basket/${sessionId}/item/${encodeURIComponent(productId)}`,
+    { method: "DELETE" },
+  );
   return res.json();
 }
 

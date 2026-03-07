@@ -7,13 +7,16 @@ Detects when enough information has been gathered and marks onboarding complete.
 
 import anthropic
 import json
+import os
+import logging
 from typing import AsyncIterator
 from ..models.session import Session
 from ..models.user import UserProfile, TastePreferences
-from ..session_store import session_store
-import uuid
 
-client = anthropic.Anthropic()
+logger = logging.getLogger(__name__)
+client = anthropic.AsyncAnthropic()
+
+ONBOARDING_MODEL = os.getenv("ONBOARDING_MODEL", "claude-sonnet-4-5")
 
 SYSTEM_PROMPT = """You are the BetterBasket onboarding assistant. Your job is to learn about
 the user so we can build them the perfect grocery basket.
@@ -95,8 +98,8 @@ class OnboardingAgent:
         # Build conversation history for the API call
         messages = self._build_messages(session, user_message)
 
-        with client.messages.stream(
-            model="claude-sonnet-4-5",
+        async with client.messages.stream(
+            model=ONBOARDING_MODEL,
             max_tokens=1024,
             system=SYSTEM_PROMPT,
             tools=TOOLS,
@@ -105,7 +108,7 @@ class OnboardingAgent:
             collected_text = ""
             tool_use_block = None
 
-            for event in stream:
+            async for event in stream:
                 if hasattr(event, "type"):
                     if event.type == "content_block_start":
                         if hasattr(event.content_block, "type"):
@@ -143,6 +146,7 @@ class OnboardingAgent:
                         onboarding_complete=True,
                     )
                     session.user_profile = profile
+                    logger.info("Profile saved for session %s", session.id)
                     completion_msg = (
                         "\n\nGreat — I've saved your profile! "
                         "Now tell me what you'd like to shop for. "
@@ -151,14 +155,19 @@ class OnboardingAgent:
                     )
                     yield completion_msg
                 except (json.JSONDecodeError, KeyError) as e:
+                    logger.error("Failed to parse profile: %s", e)
                     yield f"\n\n_(Could not save profile: {e}. Let's continue.)_"
 
     def _build_messages(self, session: Session, user_message: str) -> list[dict]:
-        """Convert session message history to Anthropic API format."""
+        """Convert session message history to Anthropic API format.
+
+        The orchestrator already appended the current user message to
+        session.messages before calling this agent. We exclude it here
+        to avoid sending it twice.
+        """
         messages = []
 
-        # Include prior conversation (skip the latest user message — we add it below)
-        for msg in session.messages:
+        for msg in session.messages[:-1]:
             messages.append({"role": msg.role, "content": msg.content})
 
         messages.append({"role": "user", "content": user_message})

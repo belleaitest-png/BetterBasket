@@ -6,11 +6,16 @@ list ready to be copy-pasted into Claude Code or any browser AI agent.
 """
 
 import anthropic
+import os
+import logging
 from typing import AsyncIterator
-from datetime import datetime
+from datetime import datetime, timezone
 from ..models.session import Session
 
-client = anthropic.Anthropic()
+logger = logging.getLogger(__name__)
+client = anthropic.AsyncAnthropic()
+
+LIST_MODEL = os.getenv("LIST_MODEL", "claude-sonnet-4-5")
 
 SYSTEM_PROMPT = """You are a precision grocery list formatter. Given a basket of items,
 produce a clean, structured shopping list that is immediately usable by a human or an AI agent
@@ -40,8 +45,8 @@ class ListGeneratorAgent:
         basket_data = self._format_basket_for_prompt(session)
         profile_data = self._format_profile_for_prompt(session)
 
-        with client.messages.stream(
-            model="claude-sonnet-4-5",
+        async with client.messages.stream(
+            model=LIST_MODEL,
             max_tokens=2048,
             system=SYSTEM_PROMPT,
             messages=[
@@ -52,13 +57,13 @@ class ListGeneratorAgent:
                         f"Basket Contents:\n{basket_data}\n\n"
                         f"Store: {session.basket.preferred_store or 'any'}\n"
                         f"Estimated Total: £{session.basket.total_estimate:.2f}\n"
-                        f"Generated: {datetime.utcnow().strftime('%Y-%m-%d')}\n\n"
+                        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d')}\n\n"
                         "Generate the shopping list now."
                     ),
                 }
             ],
         ) as stream:
-            for text in stream.text_stream:
+            async for text in stream.text_stream:
                 yield text
 
     def _format_basket_for_prompt(self, session: Session) -> str:

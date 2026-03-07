@@ -9,6 +9,8 @@ State machine transitions live here.
 
 import anthropic
 import json
+import os
+import logging
 from typing import AsyncIterator
 from ..models.session import Session, Message, AgentState
 from ..session_store import session_store
@@ -18,7 +20,10 @@ from .evaluator import EvaluatorAgent
 from .basket_manager import BasketManagerAgent
 from .list_generator import ListGeneratorAgent
 
-client = anthropic.Anthropic()
+logger = logging.getLogger(__name__)
+client = anthropic.AsyncAnthropic()
+
+SUMMARY_MODEL = os.getenv("SUMMARY_MODEL", "claude-sonnet-4-5")
 
 SYSTEM_PROMPT = """You are BetterBasket, a friendly and knowledgeable grocery shopping assistant.
 Your job is to help users build the perfect grocery basket tailored to their dietary needs,
@@ -151,8 +156,8 @@ class OrchestratorAgent:
         profile_json = session.user_profile.model_dump_json() if session.user_profile else "{}"
         basket_count = session.basket.item_count if session.basket else 0
 
-        with client.messages.stream(
-            model="claude-sonnet-4-5",
+        async with client.messages.stream(
+            model=SUMMARY_MODEL,
             max_tokens=512,
             system=SYSTEM_PROMPT,
             messages=[
@@ -169,5 +174,5 @@ class OrchestratorAgent:
                 }
             ],
         ) as stream:
-            for text in stream.text_stream:
+            async for text in stream.text_stream:
                 yield text

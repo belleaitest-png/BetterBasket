@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useStore } from "@/lib/store";
 import { streamList } from "@/lib/api";
 import Link from "next/link";
@@ -11,12 +11,7 @@ export default function ListPage() {
   const [generating, setGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    if (!sessionId) return;
-    generate();
-  }, [sessionId]);
-
-  async function generate() {
+  const generate = useCallback(async () => {
     if (!sessionId) return;
     setGenerating(true);
     setListText("");
@@ -27,7 +22,12 @@ export default function ListPage() {
     } finally {
       setGenerating(false);
     }
-  }
+  }, [sessionId]);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    generate();
+  }, [sessionId, generate]);
 
   async function copyToClipboard() {
     await navigator.clipboard.writeText(listText);

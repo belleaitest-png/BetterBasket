@@ -12,9 +12,6 @@ class UpdateQuantityRequest(BaseModel):
     quantity: int
 
 
-class RemoveItemRequest(BaseModel):
-    product_id: str
-
 
 @router.get("/basket/{session_id}")
 async def get_basket(session_id: str):
@@ -39,12 +36,12 @@ async def update_quantity(session_id: str, request: UpdateQuantityRequest):
     return {"success": success}
 
 
-@router.delete("/basket/{session_id}/item")
-async def remove_item(session_id: str, request: RemoveItemRequest):
+@router.delete("/basket/{session_id}/item/{product_id}")
+async def remove_item(session_id: str, product_id: str):
     session = session_store.get(session_id)
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
-    success = basket_manager.remove_item(session, request.product_id)
+    success = basket_manager.remove_item(session, product_id)
     session_store.save(session)
     return {"success": success}
 

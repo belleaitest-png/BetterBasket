@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { useStore } from "@/lib/store";
 import { ChatBox } from "@/components/ChatBox";
 import { BasketPanel } from "@/components/BasketPanel";

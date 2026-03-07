@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, Literal
-from datetime import datetime
+from datetime import datetime, timezone
 from .user import UserProfile
 from .basket import Basket
 
@@ -18,10 +18,14 @@ AgentState = Literal[
 ]
 
 
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 class Message(BaseModel):
     role: Literal["user", "assistant"]
     content: str
-    timestamp: datetime = datetime.utcnow()
+    timestamp: datetime = Field(default_factory=_utcnow)
 
 
 class Session(BaseModel):
@@ -30,5 +34,5 @@ class Session(BaseModel):
     user_profile: Optional[UserProfile] = None
     basket: Optional[Basket] = None
     messages: list[Message] = []
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime = Field(default_factory=_utcnow)
+    updated_at: datetime = Field(default_factory=_utcnow)
